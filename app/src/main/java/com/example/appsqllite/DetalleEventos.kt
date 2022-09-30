@@ -13,7 +13,7 @@ class DetalleEventos : AppCompatActivity() {
     //Commit cesarin
 
     private lateinit var datasource: EventosDataSource
-    //commit ferchin
+    //commit ferchi
 
     private var id = 0
     private var dia = ""
