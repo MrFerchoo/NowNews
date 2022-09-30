@@ -10,6 +10,8 @@ import kotlinx.android.synthetic.main.content_detalle_eventos.*
 
 class DetalleEventos : AppCompatActivity() {
 
+    //Commit cesarin
+
     private lateinit var datasource: EventosDataSource
     //commit ferchin
 
