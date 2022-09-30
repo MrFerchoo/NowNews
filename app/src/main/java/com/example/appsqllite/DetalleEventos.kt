@@ -14,6 +14,7 @@ class DetalleEventos : AppCompatActivity() {
 
     private lateinit var datasource: EventosDataSource
     //commit ferchi
+    //comit virkov
 
     private var id = 0
     private var dia = ""
