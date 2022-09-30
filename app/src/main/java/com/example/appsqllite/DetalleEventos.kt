@@ -11,6 +11,7 @@ import kotlinx.android.synthetic.main.content_detalle_eventos.*
 class DetalleEventos : AppCompatActivity() {
 
     private lateinit var datasource: EventosDataSource
+    //commit ferchin
 
     private var id = 0
     private var dia = ""
