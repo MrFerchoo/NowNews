@@ -4,93 +4,72 @@ import Entidades.Evento
 import Modelo.EventosDataSource
 import android.content.Context
 import android.content.Intent
+import android.content.res.Configuration
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.os.PersistableBundle
+import android.view.*
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.annotation.NonNull
+import androidx.appcompat.app.ActionBarDrawerToggle
+import androidx.core.view.GravityCompat
+import androidx.drawerlayout.widget.DrawerLayout
+import com.google.android.material.navigation.NavigationView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.lista_eventos.view.*
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), NavigationView.OnNavigationItemSelectedListener {
+
+    private lateinit var drawer: DrawerLayout
+    private lateinit var toogle: ActionBarDrawerToggle
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        LlenarInformacion()
+        val toolbar: androidx.appcompat.widget.Toolbar = findViewById(R.id.toolbar_main)
+        setSupportActionBar(toolbar)
 
+        drawer = findViewById(R.id.drawer_layout)
+
+        toogle = ActionBarDrawerToggle(this, drawer,R.string.navigation_drawer_open,R.string.navigation_drawer_close)
+        drawer.addDrawerListener(toogle)
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+        supportActionBar?.setHomeButtonEnabled(true)
+
+        val navigationView: NavigationView = findViewById(R.id.nav_view)
+        navigationView.setNavigationItemSelectedListener(this)
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.nav_usuarios -> Toast.makeText(this, "Usuarios",Toast.LENGTH_SHORT).show()
+            R.id.nav_config -> Toast.makeText(this, "Configuracion",Toast.LENGTH_SHORT).show()
+            R.id.nav_logout -> Toast.makeText(this, "Logout",Toast.LENGTH_SHORT).show()
+        }
+        drawer.closeDrawer(GravityCompat.START)
+        return true
+    }
+
+    override fun onPostCreate(savedInstanceState: Bundle?) {
+        super.onPostCreate(savedInstanceState)
+        toogle.syncState()
     }
 
 
-    fun LlenarInformacion(){
-        val datasource = EventosDataSource(this)
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        toogle.onConfigurationChanged(newConfig)
+    }
 
-        val registros = ArrayList<Evento>()
-        val cursor = datasource.consultarEventos()
-
-        while (cursor.moveToNext())
-        {
-            val columnas = Evento(
-                cursor.getInt(0),
-                cursor.getString(1),
-                cursor.getString(2)
-            )
-            registros.add(columnas)
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if(toogle.onOptionsItemSelected(item)){
+            return true
         }
 
-        val adaptador = AdaptadorEventos(this, registros)
-        listaeventos.adapter = adaptador
-
-        listaeventos.setOnItemClickListener { parent, view, position, id ->
-            val item = parent.getItemAtPosition(position) as Evento
-            val intent = Intent(this@MainActivity, DetalleEventos:: class.java)
-
-            intent.putExtra("id", item.iD_EVENTO)
-            intent.putExtra("dia", item.diA_EVENTO)
-            intent.putExtra("descripcion", item.descripcioN_EVENTO)
-
-            startActivity(intent)
-        }
-    }
-
-    fun AgregarEventos(view:View){
-        val intent = Intent(this@MainActivity, DetalleEventos:: class.java)
-        startActivity(intent)
-    }
-
-    override fun onPause() {
-        super.onPause()
-        this.LlenarInformacion()
-    }
-
-    override fun onResume() {
-        super.onResume()
-        this.LlenarInformacion()
-    }
-
-    internal class AdaptadorEventos(context: Context, datos:List<Evento>):
-        ArrayAdapter<Evento>(context, R.layout.lista_eventos, datos) {
-        var _datos: List<Evento>
-
-        init {
-            _datos = datos
-        }
-
-        @NonNull
-        override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
-            val inflater = convertView ?: LayoutInflater.from(context)
-                .inflate(R.layout.lista_eventos, parent, false)
-            val currentEntity = getItem(position)
-
-            if (currentEntity != null) {
-                inflater.LblTitulo.text = currentEntity.descripcioN_EVENTO
-            }
-
-            return inflater
-        }
-
+        return super.onOptionsItemSelected(item)
     }
 
 }
